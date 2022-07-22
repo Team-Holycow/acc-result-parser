@@ -12,12 +12,10 @@ import de.teamholycow.acc.resultserver.processor.statistic.AddDriverProcessor;
 import de.teamholycow.acc.resultserver.processor.statistic.ExtendDriverProcessor;
 import de.teamholycow.acc.resultserver.processor.statistic.SessionInformationProcessor;
 import de.teamholycow.acc.resultserver.processor.statistic.StatisticProcessor;
-import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
 import java.util.List;
 
-@Slf4j
 public class StatisticReader {
     private static final List<StatisticProcessor> STATISTIC_PROCESSORS = List.of(
             new SessionInformationProcessor(),
@@ -38,7 +36,7 @@ public class StatisticReader {
 
 
     public static void main(String[] args) throws IOException {
-        new StatisticReader("220213_175822_Q.json");
+        new StatisticReader(args[0]);
     }
 
     public StatisticReader(String fileName) throws IOException {
