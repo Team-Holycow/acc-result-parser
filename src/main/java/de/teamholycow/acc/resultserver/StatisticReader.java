@@ -36,10 +36,11 @@ public class StatisticReader {
 
 
     public static void main(String[] args) throws IOException {
-        new StatisticReader(args[0]);
+        var statisticReader = new StatisticReader();
+        statisticReader.parse(args[0]);
     }
 
-    public StatisticReader(String fileName) throws IOException {
+    public StatisticResult parse(String fileName) throws IOException {
         JsonResult jsonResult = new JsonParser().parse(fileName);
 
         StatisticResult statisticResult = new StatisticResult();
@@ -52,6 +53,7 @@ public class StatisticReader {
         statisticResult.getDrivers().forEach(driver -> {
             DRIVER_POSTPROCESSORS.forEach(driverProcessor -> driverProcessor.process(statisticResult, driver, jsonResult));
         });
-    }
 
+        return statisticResult;
+    }
 }
