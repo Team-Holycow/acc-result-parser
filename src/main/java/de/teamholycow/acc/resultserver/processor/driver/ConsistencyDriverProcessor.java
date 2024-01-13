@@ -39,21 +39,17 @@ public class ConsistencyDriverProcessor implements DriverProcessor {
         }
 
         return laps.stream()
-                .filter(l -> isValidConsistencyLap(l, bestLap, laps.get(0).getLapTime().getTime()))
+                .filter(l -> isValidConsistencyLap(l, bestLap))
                 .mapToLong(l -> l.getLapTime().getTime())
                 .average();
     }
 
-    private boolean isValidConsistencyLap(Lap lap, long bestLap, long firstLap) {
+    private boolean isValidConsistencyLap(Lap lap, long bestLap) {
         if (INCLUDE_ONLY_VALID_ROUNDS && !lap.isValid()) {
             return false;
         }
 
-        if (lap.getLapTime().getTime() == bestLap) {
-            return false;
-        }
-
-        if (IGNORE_FIRST_ROUND && firstLap == lap.getLapTime().getTime()) {
+        if (IGNORE_FIRST_ROUND && 1 == lap.getLapNumber()) {
             return false;
         }
 

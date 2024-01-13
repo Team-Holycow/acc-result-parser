@@ -12,6 +12,7 @@ import lombok.ToString;
 @ToString
 @EqualsAndHashCode
 public class Lap {
+    private int lapNumber;
     private LapTime lapTime;
     private boolean valid;
 }
