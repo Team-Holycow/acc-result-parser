@@ -10,41 +10,55 @@ import java.util.List;
 import java.util.OptionalDouble;
 
 public class BasicDriverStatisticProcessor implements DriverProcessor {
-    private static final int SLOW_TIME_OFFSET = 10000;
+	private static final int SLOW_TIME_OFFSET = 10000;
 
-    @Override
-    public void process(StatisticResult statisticResult, Driver driver, JsonResult jsonResult) {
-        DriverStatistic driverStatistic = new DriverStatistic();
+	@Override
+	public void process(StatisticResult statisticResult, Driver driver, JsonResult jsonResult) {
+		DriverStatistic driverStatistic = new DriverStatistic();
 
-        driverStatistic.setLaps(jsonResult.getLaps().size());
-        driverStatistic.setInvalidLaps((int) driver.getLaps().stream().filter(l -> !l.isValid()).count());
+		driverStatistic.setLaps(driver.getLaps().size());
+		driverStatistic.setInvalidLaps((int) driver.getLaps().stream().filter(l -> !l.isValid()).count());
 
-        var avgLapTime = calcAvgTime(driver.getLaps());
-        var bestLapTime = calcBestTime(driver.getLaps());
+		var avgLapTime = calcAvgTime(driver.getLaps());
+		var bestLapTime = calcBestTime(driver.getLaps());
+		var optimalTime = calcOptimalTime(driver.getLaps());
 
-        driverStatistic.setAvgTime(avgLapTime);
-        driverStatistic.setBestTime(bestLapTime);
-        driverStatistic.setSlowLaps(calcSlowLaps(driver.getLaps(), avgLapTime));
+		driverStatistic.setAvgTime(avgLapTime);
+		driverStatistic.setBestTime(bestLapTime);
+		driverStatistic.setOptimalTime(optimalTime);
+		driverStatistic.setSlowLaps(calcSlowLaps(driver.getLaps(), avgLapTime));
 
-        driver.setDriverStatistic(driverStatistic);
-    }
+		driver.setDriverStatistic(driverStatistic);
+	}
 
-    private long calcBestTime(List<Lap> laps) {
-        return laps.stream().mapToLong(l -> l.getLapTime().getTime()).min().orElse(0);
-    }
+	private long calcOptimalTime(List<Lap> laps) {
+		var sector1 = laps.stream().filter(Lap::isValid).mapToLong(l -> l.getLapTime().getSectorOne()).min().orElse(-1);
+		var sector2 = laps.stream().filter(Lap::isValid).mapToLong(l -> l.getLapTime().getSectorTwo()).min().orElse(-1);
+		var sector3 = laps.stream().filter(Lap::isValid).mapToLong(l -> l.getLapTime().getSectorThree()).min().orElse(-1);
 
-    private long calcAvgTime(List<Lap> laps) {
-        OptionalDouble avgTime = laps.stream()
-                .filter(Lap::isValid)
-                .mapToLong(l -> l.getLapTime().getTime())
-                .average();
+		if (sector1 > 0 && sector2 > 0 && sector3 > 0) {
+			return sector1 + sector2 + sector3;
+		}
 
-        return avgTime.isEmpty() ? -1 : Double.valueOf(avgTime.getAsDouble()).longValue();
-    }
+		return -1;
+	}
 
-    private int calcSlowLaps(List<Lap> laps, long avgTime) {
-        return (int) laps.stream()
-                .filter(lap -> avgTime + SLOW_TIME_OFFSET < lap.getLapTime().getTime())
-                .count();
-    }
+	private long calcBestTime(List<Lap> laps) {
+		return laps.stream().filter(Lap::isValid).mapToLong(l -> l.getLapTime().getTime()).min().orElse(0);
+	}
+
+	private long calcAvgTime(List<Lap> laps) {
+		OptionalDouble avgTime = laps.stream()
+				.filter(Lap::isValid)
+				.mapToLong(l -> l.getLapTime().getTime())
+				.average();
+
+		return avgTime.isEmpty() ? -1 : Double.valueOf(avgTime.getAsDouble()).longValue();
+	}
+
+	private int calcSlowLaps(List<Lap> laps, long avgTime) {
+		return (int) laps.stream()
+				.filter(lap -> avgTime + SLOW_TIME_OFFSET < lap.getLapTime().getTime())
+				.count();
+	}
 }

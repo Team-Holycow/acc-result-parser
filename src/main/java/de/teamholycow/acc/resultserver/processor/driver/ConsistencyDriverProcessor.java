@@ -28,12 +28,13 @@ public class ConsistencyDriverProcessor implements DriverProcessor {
             return 0.0;
         }
 
-        return 100 * (bestLap / consistency.getAsDouble());
+        var consistencyPercentage = 100 * (bestLap / consistency.getAsDouble());
+        return consistencyPercentage > 100 ? 100 : consistencyPercentage < 0 ? 0 : consistencyPercentage;
     }
 
     public OptionalDouble getConsistency(List<Lap> laps, long bestLap) {
         // Not enough laps
-        if (laps.size() <= 1) {
+        if (laps.stream().filter(Lap::isValid).count() < 3) {
             return OptionalDouble.empty();
         }
 
