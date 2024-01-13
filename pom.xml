@@ -5,7 +5,7 @@
 
 	<groupId>de.team-holycow</groupId>
 	<artifactId>acc-result-parser</artifactId>
-	<version>0.3</version>
+	<version>0.4</version>
 	<packaging>jar</packaging>
 
 	<name>${project.groupId}:${project.artifactId}</name>
