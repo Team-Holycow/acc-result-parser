@@ -36,12 +36,12 @@ Maven
 <dependency>
   <groupId>de.team-holycow</groupId>
   <artifactId>acc-result-parser</artifactId>
-  <version>0.1</version>
+  <version>0.2</version>
 </dependency>
  ```
 
 Gradle
 
  ```
- implementation 'de.team-holycow:acc-result-parser:0.1'
+ implementation 'de.team-holycow:acc-result-parser:0.2'
  ```
