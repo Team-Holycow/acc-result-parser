@@ -36,7 +36,7 @@ Maven
 <dependency>
   <groupId>de.team-holycow</groupId>
   <artifactId>acc-result-parser</artifactId>
-  <version>0.2</version>
+  <version>0.5</version>
 </dependency>
  ```
 
